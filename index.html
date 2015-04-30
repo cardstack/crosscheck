@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="assets/app.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id='container-slot-1'></div>
+    <div id='container-slot-2'></div>
+    <div id='container-slot-3'></div>
+    <div id='container-slot-4'></div>
+    <div id='container-slot-5'></div>
+
+    <pre id="logs"></pre>
+
+    <script type="text/x-handlebars" id="vehicle-application">
+
+      {{link-to 'Cars' 'cars'}} | {{link-to 'Trucks' 'trucks'}} | {{link-to 'Vans' 'vans'}} |
+      {{link-to 'Ambulances' 'ambulances'}} | {{link-to 'Motorcycles' 'motorcycles'}}
+
+      {{outlet}}
+    </script>
+
+    <script type="text/x-handlebars" id="vehicle-index">
+      <ul>
+        {{#each model.list as |item|}}
+          <li>{{link-to item model.showRoute item}}</li>
+        {{/each}}
+      </ul>
+    </script>
+
+    <script type="text/x-handlebars" id="vehicle-show">
+      <div>
+        <p>Model: {{model.text}}</p>
+
+        {{link-to 'Back' model.parent}}
+      </div>
+    </script>
+
+    <script type="text/x-handlebars" id="animal-application">
+
+      {{link-to 'Pandas' 'panda'}} | {{link-to 'Alpacas' 'alpaca'}} | {{link-to 'Dogs' 'dog'}}
+
+      {{outlet}}
+    </script>
+
+
+    <script type="text/x-handlebars" id="animal-index">
+      <ul>
+        {{#each model.list as |item|}}
+          <li>{{item}}</li>
+        {{/each}}
+      </ul>
+    </script>
+
+    <script src="assets/jquery.min.js"></script>
+    <script src="assets/ember.js"></script>
+    <script src="assets/ember-template-compiler.js"></script>
+    <script src="assets/app.js"></script>
+    <script src="assets/conductor-0.3.0.js"></script>
+  </body>
+</html>
