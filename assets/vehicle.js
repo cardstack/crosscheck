@@ -1,9 +1,10 @@
 // vehicle application
 
+var VehicleAppRegistry = {};
 var VehicleRouter = BaseRouter.extend();
 
 var VehicleApp = Ember.Application.extend({
-  Resolver: generateResolverWithFallback('vehicle'),
+  Resolver: generateResolverWithFallback('vehicle', VehicleAppRegistry),
   Router: VehicleRouter
 });
 
@@ -25,22 +26,28 @@ VehicleRouter.map(function () {
   });
 });
 
-VehicleApp.ApplicationRoute = BaseApplicationRoute.extend({ templateName: 'vehicle-application' });
+VehicleAppRegistry.ApplicationRoute = BaseApplicationRoute.extend({ templateName: 'vehicle-application' });
 
-VehicleApp.CarsRoute = BaseRoute.extend();
-VehicleApp.TrucksRoute = BaseRoute.extend();
-VehicleApp.VansRoute = BaseRoute.extend();
-VehicleApp.AmbulancesRoute = BaseRoute.extend();
-VehicleApp.MotorcyclesRoute = BaseRoute.extend();
+VehicleAppRegistry.CarsRoute = BaseRoute.extend();
+VehicleAppRegistry.TrucksRoute = BaseRoute.extend();
+VehicleAppRegistry.VansRoute = BaseRoute.extend();
+VehicleAppRegistry.AmbulancesRoute = BaseRoute.extend();
+VehicleAppRegistry.MotorcyclesRoute = BaseRoute.extend();
 
-VehicleApp.CarsIndexRoute = BaseIndexRoute.extend();
-VehicleApp.TrucksIndexRoute = BaseIndexRoute.extend();
-VehicleApp.VansIndexRoute = BaseIndexRoute.extend();
-VehicleApp.AmbulancesIndexRoute = BaseIndexRoute.extend();
-VehicleApp.MotorcyclesIndexRoute = BaseIndexRoute.extend();
+VehicleAppRegistry.CarsIndexRoute = BaseIndexRoute.extend();
+VehicleAppRegistry.TrucksIndexRoute = BaseIndexRoute.extend();
+VehicleAppRegistry.VansIndexRoute = BaseIndexRoute.extend();
+VehicleAppRegistry.AmbulancesIndexRoute = BaseIndexRoute.extend();
+VehicleAppRegistry.MotorcyclesIndexRoute = BaseIndexRoute.extend();
 
-VehicleApp.CarsShowRoute = BaseShowRoute.extend();
-VehicleApp.TrucksShowRoute = BaseShowRoute.extend();
-VehicleApp.VansShowRoute = BaseShowRoute.extend();
-VehicleApp.AmbulancesShowRoute = BaseShowRoute.extend();
-VehicleApp.MotorcyclesShowRoute = BaseShowRoute.extend();
+VehicleAppRegistry.CarsShowRoute = BaseShowRoute.extend();
+VehicleAppRegistry.TrucksShowRoute = BaseShowRoute.extend();
+VehicleAppRegistry.VansShowRoute = BaseShowRoute.extend();
+VehicleAppRegistry.AmbulancesShowRoute = BaseShowRoute.extend();
+VehicleAppRegistry.MotorcyclesShowRoute = BaseShowRoute.extend();
+
+var card = Conductor.card({
+  render: function(selector) {
+    VehicleApp.create({ rootElement: selector });
+  }
+});
