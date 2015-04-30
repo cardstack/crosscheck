@@ -58,55 +58,6 @@ var Environment = Ember.Object.extend({
   }
 });
 
-var Container = Ember.Object.extend({
-  _data: null,
-
-  init: function init() {
-    this._super.apply(this, arguments);
-
-    this.prepareSlot();
-    this.bootCards();
-  },
-
-  prepareSlot: function prepareSlot() {
-    var slotId = this._data.slotId;
-    var slotElementId = this.environment.elementForSlot(slotId);
-    var slot = document.getElementById(slotElementId);
-
-    this._data.cards.forEach(function (card, index) {
-      var element = document.createElement('div');
-      element.id = '' + slotId + '-' + index;
-
-      slot.appendChild(element);
-    });
-  },
-
-  bootCards: function bootCards() {
-    var _this2 = this;
-
-    var cardContainer = this;
-
-    this._data.cards.forEach(function (card, index) {
-      var slotId = _this2._data.slotId;
-      var App = CardTypes[card.type];
-
-      App.create({
-        cardContainer: cardContainer,
-        rootElement: '#' + slotId + '-' + index
-      });
-    });
-  },
-
-  sendMessage: function sendMessage() {
-    var _environment;
-
-    (_environment = this.environment).sendMessage.apply(_environment, [this].concat(arguments));
-  },
-
-  receiveMessage: function receiveMessage() {
-    console.log.apply(console, ['received: '].concat(arguments));
-  }
-});
 
 // DOOO EEEEEEETTTTTTT!!!!!
 var env = Environment.create();
