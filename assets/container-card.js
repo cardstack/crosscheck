@@ -7,9 +7,10 @@ var card = Conductor.card({
 
   prepareSlot: function prepareSlot() {
     var slotId = this.slotId;
+    var cards = this.data.cards;
     var slot = document.querySelector(slotId);
 
-    this.data.cards.forEach(function (card, index) {
+    cards.forEach(function (card, index) {
       var element = document.createElement('div');
       element.id = '' + slot.id + '-' + index;
 
@@ -19,16 +20,23 @@ var card = Conductor.card({
 
   bootCards: function bootCards() {
     var cardContainer = this;
+    var cards = this.data.cards;
 
-    cardContainer.conductor = new Conductor( );
+    cardContainer.conductor = new Conductor();
 
-    this.data.cards.forEach(function (cardOptions, index) {
+    cards.forEach(function (card, index) {
       var slotId = cardContainer.slotId;
-      var cardInstance = cardContainer.conductor.load(cardOptions.url, index, {
-        adapter: Conductor.adapters.inline
+      var adapter = card.options.adapter;
+      var cardAdapter = Conductor.adapters[adapter];
+      var cardInstance = cardContainer.conductor.load(card.url, index, {
+        adapter: cardAdapter
       });
 
-      cardInstance.render(slotId + '-' + index);
+      if (adapter === 'iframe') {
+        cardInstance.appendTo(slotId + '-' + index);
+      } else {
+        cardInstance.render(slotId + '-' + index);
+      }
     });
   },
 
