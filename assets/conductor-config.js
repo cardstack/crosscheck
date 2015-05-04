@@ -18,6 +18,10 @@ var CardManagerService = Conductor.Oasis.Service.extend({
 
   addCard: function(card) {
     this.send('addCard', card);
+  },
+
+  destroyCard: function(card) {
+    this.send('destroyCard', card);
   }
 });
 
@@ -25,32 +29,48 @@ conductorInstance.addDefaultCapability('cardManager', CardManagerService);
 
 var container1 = createContainerCard('container-1', {
   cards: [
-    { url: 'assets/animal.js', options: { adapter: 'inline' } },
-    { url: 'assets/vehicle.js', options: { adapter: 'inline' } }
+    { uuid: UUID.generate(), url: 'assets/animal.js', options: { adapter: 'inline' } },
+    { uuid: UUID.generate(), url: 'assets/vehicle.js', options: { adapter: 'inline' } }
   ]
 });
 
 var container2 = createContainerCard('container-2', {
   cards: [
-    { url: 'assets/animal.js', options: { adapter: 'inline' } },
-    { url: 'assets/vehicle.js', options: { adapter: 'inline' } }
+    { uuid: UUID.generate(), url: 'assets/animal.js', options: { adapter: 'inline' } },
+    { uuid: UUID.generate(), url: 'assets/vehicle.js', options: { adapter: 'inline' } }
   ]
 });
 
 var container3 = createContainerCard('container-3', {
   cards: [
-    { url: 'http://new.dockyard.com', options: { adapter: 'iframe' }}
+    { uuid: UUID.generate(), url: 'http://new.dockyard.com', options: { adapter: 'iframe' }}
   ]
-});
-
-$('#lol').on('click', function() {
-  container1.waitForLoad().then(function(card) {
-    card.sandbox.capabilities.cardManager.addCard({
-      url: 'assets/animal.js', options: { adapter: 'inline' }
-    });
-  });
 });
 
 container1.render('#container-slot-1');
 container2.render('#container-slot-2');
 container3.render('#container-slot-3');
+
+$(function() {
+  $('#addAnimalCard').on('click', function() {
+    container1.waitForLoad().then(function(card) {
+      card.sandbox.capabilities.cardManager.addCard({
+        uuid: UUID.generate(), url: 'assets/animal.js', options: { adapter: 'inline' }
+      });
+    });
+  });
+
+  $('#addVehicleCard').on('click', function() {
+    container1.waitForLoad().then(function(card) {
+      card.sandbox.capabilities.cardManager.addCard({
+        uuid: UUID.generate(), url: 'assets/vehicle.js', options: { adapter: 'inline' }
+      });
+    });
+  });
+
+  $('#destroyCards').on('click', function() {
+    container1.waitForLoad().then(function(card) {
+      card.sandbox.capabilities.cardManager.destroyCard();
+    });
+  });
+});

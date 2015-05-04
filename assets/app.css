@@ -3,6 +3,10 @@ html, body {
     margin: 20px;
 }
 
+.controls {
+  margin-bottom: 20px;
+}
+
 .ember-application {
   display: inline-block;
   width: 18%;
@@ -11,4 +15,5 @@ html, body {
   border: 3px solid black;
   margin-right: 10px;
   padding: 10px;
+  margin-bottom: 10px;
 }

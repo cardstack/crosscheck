@@ -48,6 +48,11 @@ VehicleAppRegistry.MotorcyclesShowRoute = BaseShowRoute.extend();
 
 var card = Conductor.card({
   render: function(selector) {
-    VehicleApp.create({ rootElement: selector });
+    this.app = VehicleApp.create({ rootElement: selector });
+  },
+
+  destroy: function() {
+    console.log('Destroying Ember app');
+    this.app.destroy();
   }
 });

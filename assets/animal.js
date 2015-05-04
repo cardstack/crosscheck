@@ -24,6 +24,11 @@ AnimalAppRegistry.DogRoute = BaseRoute.extend({ templateName: 'animal-index' });
 
 var card = Conductor.card({
   render: function(selector) {
-    AnimalApp.create({ rootElement: selector });
+    this.app = AnimalApp.create({ rootElement: selector });
+  },
+
+  destroy: function() {
+    console.log('Destroying Ember app');
+    this.app.destroy();
   }
 });

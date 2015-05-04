@@ -4,9 +4,22 @@ var card = Conductor.card({
       events: {
         addCard: function(newCard) {
           var cardInstance = this.card;
+          var cardLength = cardInstance.data.cards.length;
           cardInstance.addCard(newCard);
           cardInstance.prepareSlot(newCard);
-          cardInstance.appendCard(newCard);
+          cardInstance.appendCard(newCard, cardLength);
+        },
+
+        destroyCard: function(uuid) {
+          var cardInstance = this.card;
+          var cardInstanceCards = cardInstance.conductor.cards;
+          var cards = Object.keys(cardInstanceCards).map(function(instanceName) {
+            return cardInstanceCards[instanceName];
+          });
+
+          cards.forEach(function(card) {
+            card[0][0].destroy();
+          });
         }
       }
     })
@@ -23,12 +36,10 @@ var card = Conductor.card({
   },
 
   prepareSlot: function(card) {
-    var slotId = this.slotId;
-    var slot = document.querySelector(slotId);
-    var uuid = UUID.generate();
+    var slot = document.querySelector(this.slotId);
     var element = document.createElement('div');
+    var uuid = card.uuid || UUID.generate();
 
-    card.uuid = uuid;
     element.id = slot.id + '-' + uuid;
     card.elementId = '#' + element.id;
 
@@ -50,14 +61,14 @@ var card = Conductor.card({
     return card;
   },
 
-  appendCard: function(card) {
+  appendCard: function(card, index) {
     var slotId = this.slotId;
     var el = card.elementId;
     var uuid = card.uuid;
     var adapter = card.options.adapter;
 
     var cardAdapter = Conductor.adapters[adapter];
-    var cardInstance = this.conductor.load(card.url, uuid, {
+    var cardInstance = this.conductor.load(card.url, index, {
       adapter: cardAdapter
     });
 
@@ -66,15 +77,5 @@ var card = Conductor.card({
     } else {
       cardInstance.render(el);
     }
-  },
-
-  sendMessage: function sendMessage() {
-    var _environment;
-
-    (_environment = this.environment).sendMessage.apply(_environment, [this].concat(arguments));
-  },
-
-  receiveMessage: function receiveMessage() {
-    console.log.apply(console, ['received: '].concat(arguments));
   }
 });
