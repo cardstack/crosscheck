@@ -1,21 +1,38 @@
 var card = Conductor.card({
+  consumers: {
+    cardManager: Conductor.Oasis.Consumer.extend({
+      events: {
+        addCard: function(newCard) {
+          var cardInstance = this.card;
+          cardInstance.addCard(newCard);
+          cardInstance.prepareSlot(newCard);
+          cardInstance.appendCard(newCard);
+        }
+      }
+    })
+  },
+
   render: function(slotId) {
     this.slotId = slotId;
-    this.prepareSlot();
+    this.prepareSlots();
     this.bootCards();
   },
 
-  prepareSlot: function prepareSlot() {
+  prepareSlots: function prepareSlots() {
+    this.data.cards.forEach(this.prepareSlot, this);
+  },
+
+  prepareSlot: function(card) {
     var slotId = this.slotId;
-    var cards = this.data.cards;
     var slot = document.querySelector(slotId);
+    var uuid = UUID.generate();
+    var element = document.createElement('div');
 
-    cards.forEach(function (card, index) {
-      var element = document.createElement('div');
-      element.id = '' + slot.id + '-' + index;
+    card.uuid = uuid;
+    element.id = slot.id + '-' + uuid;
+    card.elementId = '#' + element.id;
 
-      slot.appendChild(element);
-    });
+    slot.appendChild(element);
   },
 
   bootCards: function bootCards() {
@@ -24,20 +41,31 @@ var card = Conductor.card({
 
     cardContainer.conductor = new Conductor();
 
-    cards.forEach(function (card, index) {
-      var slotId = cardContainer.slotId;
-      var adapter = card.options.adapter;
-      var cardAdapter = Conductor.adapters[adapter];
-      var cardInstance = cardContainer.conductor.load(card.url, index, {
-        adapter: cardAdapter
-      });
+    cards.forEach(cardContainer.appendCard, this);
+  },
 
-      if (adapter === 'iframe') {
-        cardInstance.appendTo(slotId + '-' + index);
-      } else {
-        cardInstance.render(slotId + '-' + index);
-      }
+  addCard: function(card) {
+    var cards = this.data.cards;
+    cards.push(card);
+    return card;
+  },
+
+  appendCard: function(card) {
+    var slotId = this.slotId;
+    var el = card.elementId;
+    var uuid = card.uuid;
+    var adapter = card.options.adapter;
+
+    var cardAdapter = Conductor.adapters[adapter];
+    var cardInstance = this.conductor.load(card.url, uuid, {
+      adapter: cardAdapter
     });
+
+    if (adapter === 'iframe') {
+      cardInstance.appendTo(el);
+    } else {
+      cardInstance.render(el);
+    }
   },
 
   sendMessage: function sendMessage() {
