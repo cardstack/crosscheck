@@ -97,9 +97,11 @@ var card = Conductor.card({
   destroyCard: function(card) {
     var conductorInstance = this.conductor;
     var instance = card.instance;
+    var element = document.querySelector(card.elementId);
 
     instance.waitForLoad().then(function(loadedInstance) {
       loadedInstance.sandbox.capabilities.cardManager.destroyCard();
+      element.remove();
     });
   }
 });
