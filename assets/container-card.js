@@ -18,6 +18,18 @@ var card = Conductor.card({
     })
   },
 
+  services: {
+    cardManager: Conductor.Oasis.Service.extend({
+      initialize: function (port) {
+        this.sandbox.cardManagerPort = port;
+      },
+
+      destroyCard: function() {
+        this.send('destroyCard');
+      }
+    })
+  },
+
   render: function(slotId) {
     this.slotId = slotId;
     this.prepareSlots();
@@ -63,17 +75,7 @@ var card = Conductor.card({
 
     var cardAdapter = Conductor.adapters[adapter];
 
-    var CardManagerService = Conductor.Oasis.Service.extend({
-      initialize: function (port) {
-        this.sandbox.cardManagerPort = port;
-      },
-
-      destroyCard: function() {
-        this.send('destroyCard');
-      }
-    });
-
-    conductorInstance.addDefaultCapability('cardManager', CardManagerService);
+    conductorInstance.addDefaultCapability('cardManager', this.services.cardManager);
 
     var cardInstance = conductorInstance.load(card.url, index, {
       adapter: cardAdapter

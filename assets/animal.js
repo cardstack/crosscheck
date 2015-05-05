@@ -27,8 +27,9 @@ var card = Conductor.card({
     cardManager: Conductor.Oasis.Consumer.extend({
       events: {
         destroyCard: function() {
-          console.log('Destroying Ember app', this.card.app);
+          if (!this.card.app) { return; }
           this.card.app.destroy();
+          delete this.card.app;
         }
       }
     })
