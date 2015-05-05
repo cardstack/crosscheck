@@ -23,12 +23,18 @@ AnimalAppRegistry.AlpacaRoute = BaseRoute.extend({ templateName: 'animal-index' 
 AnimalAppRegistry.DogRoute = BaseRoute.extend({ templateName: 'animal-index' });
 
 var card = Conductor.card({
-  render: function(selector) {
-    this.app = AnimalApp.create({ rootElement: selector });
+  consumers: {
+    cardManager: Conductor.Oasis.Consumer.extend({
+      events: {
+        destroyCard: function() {
+          console.log('Destroying Ember app', this.card.app);
+          this.card.app.destroy();
+        }
+      }
+    })
   },
 
-  destroy: function() {
-    console.log('Destroying Ember app');
-    this.app.destroy();
+  render: function(selector) {
+    this.app = AnimalApp.create({ rootElement: selector });
   }
 });

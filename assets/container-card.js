@@ -11,15 +11,8 @@ var card = Conductor.card({
         },
 
         destroyCard: function(uuid) {
-          var cardInstance = this.card;
-          var cardInstanceCards = cardInstance.conductor.cards;
-          var cards = Object.keys(cardInstanceCards).map(function(instanceName) {
-            return cardInstanceCards[instanceName];
-          });
-
-          cards.forEach(function(card) {
-            card[0][0].destroy();
-          });
+          this.card.destroyCards();
+          // this.card.destroyCard(uuid);
         }
       }
     })
@@ -62,13 +55,27 @@ var card = Conductor.card({
   },
 
   appendCard: function(card, index) {
+    var conductorInstance = this.conductor;
     var slotId = this.slotId;
     var el = card.elementId;
     var uuid = card.uuid;
     var adapter = card.options.adapter;
 
     var cardAdapter = Conductor.adapters[adapter];
-    var cardInstance = this.conductor.load(card.url, index, {
+
+    var CardManagerService = Conductor.Oasis.Service.extend({
+      initialize: function (port) {
+        this.sandbox.cardManagerPort = port;
+      },
+
+      destroyCard: function() {
+        this.send('destroyCard');
+      }
+    });
+
+    conductorInstance.addDefaultCapability('cardManager', CardManagerService);
+
+    var cardInstance = conductorInstance.load(card.url, index, {
       adapter: cardAdapter
     });
 
@@ -77,5 +84,20 @@ var card = Conductor.card({
     } else {
       cardInstance.render(el);
     }
+
+    card.instance = cardInstance;
+  },
+
+  destroyCards: function() {
+    this.data.cards.forEach(this.destroyCard, this);
+  },
+
+  destroyCard: function(card) {
+    var conductorInstance = this.conductor;
+    var instance = card.instance;
+
+    instance.waitForLoad().then(function(loadedInstance) {
+      loadedInstance.sandbox.capabilities.cardManager.destroyCard();
+    });
   }
 });

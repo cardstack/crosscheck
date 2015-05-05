@@ -68,8 +68,14 @@ $(function() {
     });
   });
 
-  $('#destroyCards').on('click', function() {
+  $('#destroyContainer1Cards').on('click', function() {
     container1.waitForLoad().then(function(card) {
+      card.sandbox.capabilities.cardManager.destroyCard();
+    });
+  });
+
+  $('#destroyContainer2Cards').on('click', function() {
+    container2.waitForLoad().then(function(card) {
       card.sandbox.capabilities.cardManager.destroyCard();
     });
   });

@@ -47,12 +47,18 @@ VehicleAppRegistry.AmbulancesShowRoute = BaseShowRoute.extend();
 VehicleAppRegistry.MotorcyclesShowRoute = BaseShowRoute.extend();
 
 var card = Conductor.card({
-  render: function(selector) {
-    this.app = VehicleApp.create({ rootElement: selector });
+  consumers: {
+    cardManager: Conductor.Oasis.Consumer.extend({
+      events: {
+        destroyCard: function(data) {
+          console.log('Destroying Ember app', this.card.app);
+          this.card.app.destroy();
+        }
+      }
+    })
   },
 
-  destroy: function() {
-    console.log('Destroying Ember app');
-    this.app.destroy();
+  render: function(selector) {
+    this.app = VehicleApp.create({ rootElement: selector });
   }
 });
