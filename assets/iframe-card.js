@@ -1,56 +1,55 @@
-// vehicle application
+// control panel application
 
-var VehicleAppRegistry = {};
-var VehicleRouter = BaseRouter.extend();
+var ControlPanelAppRegistry = {};
+var ControlPanelRouter = BaseRouter.extend();
 
-var VehicleApp = Ember.Application.extend({
-  Resolver: generateResolverWithFallback('vehicle', VehicleAppRegistry),
-  Router: VehicleRouter,
+var ControlPanelApp = Ember.Application.extend({
+  Resolver: generateResolverWithFallback('ControlPanel', ControlPanelAppRegistry),
+  Router: ControlPanelRouter,
   destroy: function() {
     this._super.apply(this, arguments);
     console.log('Destroyed!', this);
   }
 });
 
-VehicleRouter.map(function () {
-  this.route('cars', function () {
-    this.route('show', { path: ':id' });
-  });
-  this.route('trucks', function () {
-    this.route('show', { path: ':id' });
-  });
-  this.route('vans', function () {
-    this.route('show', { path: ':id' });
-  });
-  this.route('ambulances', function () {
-    this.route('show', { path: ':id' });
-  });
-  this.route('motorcycles', function () {
-    this.route('show', { path: ':id' });
-  });
+ControlPanelRouter.map(function () {
 });
 
-VehicleAppRegistry.ApplicationRoute = BaseApplicationRoute.extend({ templateName: 'vehicle-application' });
+ControlPanelAppRegistry.CardService = Ember.Service.extend({
+  handleInit: Ember.on('init', function() {
+    var app = this.container.lookup('application:main');
+    Ember.set(this, 'cardInstance', app.get('cardInstance'));
+  })
+});
 
-VehicleAppRegistry.CarsRoute = BaseRoute.extend();
-VehicleAppRegistry.TrucksRoute = BaseRoute.extend();
-VehicleAppRegistry.VansRoute = BaseRoute.extend();
-VehicleAppRegistry.AmbulancesRoute = BaseRoute.extend();
-VehicleAppRegistry.MotorcyclesRoute = BaseRoute.extend();
+ControlPanelAppRegistry.ApplicationRoute = BaseApplicationRoute.extend({
+  templateName: 'controlpanel-application',
 
-VehicleAppRegistry.CarsIndexRoute = BaseIndexRoute.extend();
-VehicleAppRegistry.TrucksIndexRoute = BaseIndexRoute.extend();
-VehicleAppRegistry.VansIndexRoute = BaseIndexRoute.extend();
-VehicleAppRegistry.AmbulancesIndexRoute = BaseIndexRoute.extend();
-VehicleAppRegistry.MotorcyclesIndexRoute = BaseIndexRoute.extend();
+  cardService: Ember.inject.service('card'),
 
-VehicleAppRegistry.CarsShowRoute = BaseShowRoute.extend();
-VehicleAppRegistry.TrucksShowRoute = BaseShowRoute.extend();
-VehicleAppRegistry.VansShowRoute = BaseShowRoute.extend();
-VehicleAppRegistry.AmbulancesShowRoute = BaseShowRoute.extend();
-VehicleAppRegistry.MotorcyclesShowRoute = BaseShowRoute.extend();
+  actions: {
+    addCard: function(containerKey, cardUrl) {
+      var cardService = Ember.get(this, 'cardService');
+      var cardInstance = cardService.get('cardInstance');
+      cardInstance.consumers.cardManager.send('addCard', {
+        containerKey: containerKey,
+        card: {
+          uuid: UUID.generate(), url: cardUrl, options: { adapter: 'inline' }
+        }
+      });
+    },
 
-var card = Conductor.card({
+    destroyCards: function(containerKey) {
+      var cardService = Ember.get(this, 'cardService');
+      var cardInstance = cardService.get('cardInstance');
+      cardInstance.consumers.cardManager.send('destroyCards', {
+        containerKey: containerKey
+      });
+    }
+  }
+});
+
+var cardInstance = Conductor.card({
   consumers: {
     cardManager: Conductor.Oasis.Consumer.extend({
       events: {
@@ -68,6 +67,7 @@ var card = Conductor.card({
   },
 
   render: function() {
-    this.app = VehicleApp.create();
+    this.app = ControlPanelApp.create();
+    this.app.set('cardInstance', this);
   }
 });

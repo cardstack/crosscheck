@@ -1,4 +1,8 @@
 var containerCard = Conductor.card({
+  conductorConfiguration: {
+    allowSameOrigin: true
+  },
+
   consumers: {
     cardManager: Conductor.Oasis.Consumer.extend({
       events: {
@@ -10,9 +14,8 @@ var containerCard = Conductor.card({
           cardInstance.appendCard(newCard, cardLength);
         },
 
-        destroyCard: function(uuid) {
+        destroyCards: function() {
           this.card.destroyCards();
-          // this.card.destroyCard(uuid);
         }
       }
     })
@@ -29,6 +32,17 @@ var containerCard = Conductor.card({
       },
 
       events: {
+        addCard: function(data) {
+          var containerKey = data.containerKey;
+          var card = data.card;
+          ENVIRONMENT.addCard(containerKey, card);
+        },
+
+        destroyCards: function(data) {
+          var containerKey = data.containerKey;
+          ENVIRONMENT.destroyCards(containerKey);
+        },
+
         didDestroyApp: function(card) {
           var url = card.url;
           var id = card.id;

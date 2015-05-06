@@ -1,16 +1,6 @@
 var conductorInstance = new Conductor();
 var containerCardPath = 'assets/container-card.js';
 
-function createContainerCard(containerId, options) {
-  var capabilities = options.capabilities || [];
-  conductorInstance.loadData(containerCardPath, containerId, options);
-
-  return conductorInstance.load(containerCardPath, containerId, {
-    adapter: Conductor.adapters.inline,
-    capabilities: capabilities
-  });
-}
-
 var CardManagerService = Conductor.Oasis.Service.extend({
   initialize: function(port) {
     this.sandbox.cardManagerPort = port;
@@ -20,69 +10,76 @@ var CardManagerService = Conductor.Oasis.Service.extend({
     this.send('addCard', card);
   },
 
-  destroyCard: function(card) {
-    this.send('destroyCard', card);
+  destroyCards: function() {
+    this.send('destroyCards');
   }
 });
 
 conductorInstance.addDefaultCapability('cardManager', CardManagerService);
 
-var container1 = createContainerCard('container-1', {
-  cards: [
-    { uuid: UUID.generate(), url: 'assets/animal.js', options: { adapter: 'inline' } },
-    { uuid: UUID.generate(), url: 'assets/vehicle.js', options: { adapter: 'inline' } }
-  ]
-});
+var ENVIRONMENT = {
+  containerInstances: {},
 
-var container2 = createContainerCard('container-2', {
-  cards: [
-    { uuid: UUID.generate(), url: 'assets/animal.js', options: { adapter: 'inline' } },
-    { uuid: UUID.generate(), url: 'assets/vehicle.js', options: { adapter: 'inline' } }
-  ]
-});
+  containers: {
+    'container-1': {
+      cards: [
+        { uuid: UUID.generate(), url: 'assets/animal.js', options: { adapter: 'inline' } },
+        { uuid: UUID.generate(), url: 'assets/vehicle.js', options: { adapter: 'inline' } }
+      ]
+    },
+    'container-2': {
+      cards: [
+        { uuid: UUID.generate(), url: 'assets/animal.js', options: { adapter: 'inline' } },
+        { uuid: UUID.generate(), url: 'assets/vehicle.js', options: { adapter: 'inline' } }
+      ]
+    },
+    'sidebar-1': {
+      cards: [
+        { uuid: UUID.generate(), url: 'http://localhost:8000/iframe.html', options: { adapter: 'iframe' }}
+      ]
+    }
+  },
 
-var container3 = createContainerCard('container-3', {
-  cards: [
-    { uuid: UUID.generate(), url: 'http://localhost:8000/iframe.html', options: { adapter: 'iframe' }}
-  ]
-});
+  addCard: function(containerKey, card) {
+    var container = this.containerInstances[containerKey];
+
+    if (!container) { return; }
+
+    container.waitForLoad().then(function(loadedContainer) {
+      loadedContainer.sandbox.capabilities.cardManager.addCard(card);
+    });
+  },
+
+  destroyCards: function(containerKey) {
+    var container = this.containerInstances[containerKey];
+
+
+    if (!container) { return; }
+
+    container.waitForLoad().then(function(loadedContainer) {
+      loadedContainer.sandbox.capabilities.cardManager.destroyCards();
+    });
+  },
+
+  createContainerCard: function(containerId) {
+    var options = this.containers[containerId];
+    var capabilities = options.capabilities || [];
+    conductorInstance.loadData(containerCardPath, containerId, options);
+
+    var containerCard = conductorInstance.load(containerCardPath, containerId, {
+      adapter: Conductor.adapters.inline,
+      capabilities: capabilities
+    });
+
+    this.containerInstances[containerId] = containerCard;
+    return containerCard;
+  }
+};
+
+var container1 = ENVIRONMENT.createContainerCard('container-1');
+var container2 = ENVIRONMENT.createContainerCard('container-2');
+var sidebar1 = ENVIRONMENT.createContainerCard('sidebar-1');
 
 container1.render('#container-slot-1');
 container2.render('#container-slot-2');
-container3.render('#container-slot-3');
-
-$(function() {
-  $('#addAnimalCard').on('click', function() {
-    container1.waitForLoad().then(function(card) {
-      card.sandbox.capabilities.cardManager.addCard({
-        uuid: UUID.generate(), url: 'assets/animal.js', options: { adapter: 'inline' }
-      });
-    });
-  });
-
-  $('#addVehicleCard').on('click', function() {
-    container1.waitForLoad().then(function(card) {
-      card.sandbox.capabilities.cardManager.addCard({
-        uuid: UUID.generate(), url: 'assets/vehicle.js', options: { adapter: 'inline' }
-      });
-    });
-  });
-
-  $('#destroyContainer1Cards').on('click', function() {
-    container1.waitForLoad().then(function(card) {
-      card.sandbox.capabilities.cardManager.destroyCard();
-    });
-  });
-
-  $('#destroyContainer2Cards').on('click', function() {
-    container2.waitForLoad().then(function(card) {
-      card.sandbox.capabilities.cardManager.destroyCard();
-    });
-  });
-
-  $('#destroyContainer3Cards').on('click', function() {
-    container3.waitForLoad().then(function(card) {
-      card.sandbox.capabilities.cardManager.destroyCard();
-    });
-  });
-});
+sidebar1.render('#sidebar');
