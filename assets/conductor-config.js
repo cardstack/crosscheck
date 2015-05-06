@@ -43,7 +43,7 @@ var container2 = createContainerCard('container-2', {
 
 var container3 = createContainerCard('container-3', {
   cards: [
-    { uuid: UUID.generate(), url: 'http://new.dockyard.com', options: { adapter: 'iframe' }}
+    { uuid: UUID.generate(), url: 'http://localhost:8000/iframe.html', options: { adapter: 'iframe' }}
   ]
 });
 

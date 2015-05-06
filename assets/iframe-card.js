@@ -67,7 +67,7 @@ var card = Conductor.card({
     })
   },
 
-  render: function(selector) {
-    this.app = VehicleApp.create({ rootElement: selector });
+  render: function() {
+    this.app = VehicleApp.create();
   }
 });

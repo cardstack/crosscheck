@@ -97,14 +97,12 @@ var containerCard = Conductor.card({
       adapter: cardAdapter
     });
 
-    if (adapter === 'iframe') {
-      cardInstance.appendTo(el);
-    } else {
-      cardInstance.render(el);
-    }
-
     card.instance = cardInstance;
-    card.instance.sandbox.el = card.element;
+
+      cardInstance.appendTo(el).then(function() {
+        cardInstance.render(el);
+        card.instance.sandbox.el = card.element;
+      });
   },
 
   destroyCards: function() {
@@ -114,7 +112,6 @@ var containerCard = Conductor.card({
   destroyCard: function(card) {
     var conductorInstance = this.conductor;
     var instance = card.instance;
-    var element = document.querySelector(card.elementId);
 
     instance.waitForLoad().then(function(loadedInstance) {
       instance.sandbox.capabilities.cardManager.destroyCard();

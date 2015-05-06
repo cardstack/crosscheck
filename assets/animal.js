@@ -4,7 +4,11 @@ var AnimalRouter = BaseRouter.extend();
 
 var AnimalApp = Ember.Application.extend({
   Resolver: generateResolverWithFallback('animal', AnimalAppRegistry),
-  Router: AnimalRouter
+  Router: AnimalRouter,
+  destroy: function() {
+    this._super.apply(this, arguments);
+    console.log('Destroyed!', this);
+  }
 });
 
 AnimalRouter.map(function () {
@@ -15,7 +19,6 @@ AnimalRouter.map(function () {
 
 AnimalAppRegistry.ApplicationRoute = BaseApplicationRoute.extend({
   templateName: 'animal-application'
-
 });
 
 AnimalAppRegistry.PandaRoute = BaseRoute.extend({ templateName: 'animal-index' });
