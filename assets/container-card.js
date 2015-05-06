@@ -113,10 +113,10 @@ var containerCard = Conductor.card({
 
     card.instance = cardInstance;
 
-      cardInstance.appendTo(el).then(function() {
-        cardInstance.render(el);
-        card.instance.sandbox.el = card.element;
-      });
+    cardInstance.appendTo(el).then(function() {
+      cardInstance.render(el);
+      card.instance.sandbox.el = card.element;
+    });
   },
 
   destroyCards: function() {
