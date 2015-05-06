@@ -101,7 +101,15 @@ var card = Conductor.card({
 
     instance.waitForLoad().then(function(loadedInstance) {
       loadedInstance.sandbox.capabilities.cardManager.destroyCard();
+      return { element: element, loadedInstance: loadedInstance };
+    })
+    .then(function(data) {
+      var element = data.element;
+      var loadedInstance = data.loadedInstance;
+
+      loadedInstance.destroy();
       element.remove();
     });
+
   }
 });
