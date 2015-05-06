@@ -12,7 +12,7 @@ function createContainerCard(containerId, options) {
 }
 
 var CardManagerService = Conductor.Oasis.Service.extend({
-  initialize: function (port) {
+  initialize: function(port) {
     this.sandbox.cardManagerPort = port;
   },
 
@@ -76,6 +76,12 @@ $(function() {
 
   $('#destroyContainer2Cards').on('click', function() {
     container2.waitForLoad().then(function(card) {
+      card.sandbox.capabilities.cardManager.destroyCard();
+    });
+  });
+
+  $('#destroyContainer3Cards').on('click', function() {
+    container3.waitForLoad().then(function(card) {
       card.sandbox.capabilities.cardManager.destroyCard();
     });
   });

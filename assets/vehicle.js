@@ -5,7 +5,11 @@ var VehicleRouter = BaseRouter.extend();
 
 var VehicleApp = Ember.Application.extend({
   Resolver: generateResolverWithFallback('vehicle', VehicleAppRegistry),
-  Router: VehicleRouter
+  Router: VehicleRouter,
+  destroy: function() {
+    this._super.apply(this, arguments);
+    console.log('Destroyed!');
+  }
 });
 
 VehicleRouter.map(function () {
@@ -50,9 +54,13 @@ var card = Conductor.card({
   consumers: {
     cardManager: Conductor.Oasis.Consumer.extend({
       events: {
-        destroyCard: function() {
+        destroyCard: function(data) {
           if (!this.card.app) { return; }
           this.card.app.destroy();
+          this.send('didDestroyApp', {
+            url: this.card.data.url,
+            id: this.card.data.id
+          });
           delete this.card.app;
         }
       }

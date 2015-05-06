@@ -1,4 +1,4 @@
-var card = Conductor.card({
+var containerCard = Conductor.card({
   consumers: {
     cardManager: Conductor.Oasis.Consumer.extend({
       events: {
@@ -20,12 +20,22 @@ var card = Conductor.card({
 
   services: {
     cardManager: Conductor.Oasis.Service.extend({
-      initialize: function (port) {
+      initialize: function(port) {
         this.sandbox.cardManagerPort = port;
       },
 
-      destroyCard: function() {
-        this.send('destroyCard');
+      destroyCard: function(data) {
+        this.send('destroyCard', data);
+      },
+
+      events: {
+        didDestroyApp: function(card) {
+          var url = card.url;
+          var id = card.id;
+
+          var cardReference = this.sandbox.conductor.cards[url][id][0];
+          this.sandbox.conductor.unload(cardReference);
+        }
       }
     })
   },
@@ -47,6 +57,7 @@ var card = Conductor.card({
 
     element.id = slot.id + '-' + uuid;
     card.elementId = '#' + element.id;
+    card.element = element;
 
     slot.appendChild(element);
   },
@@ -77,6 +88,11 @@ var card = Conductor.card({
 
     conductorInstance.addDefaultCapability('cardManager', this.services.cardManager);
 
+    conductorInstance.loadData(card.url, index, {
+      url: card.url,
+      id: index
+    });
+
     var cardInstance = conductorInstance.load(card.url, index, {
       adapter: cardAdapter
     });
@@ -88,6 +104,7 @@ var card = Conductor.card({
     }
 
     card.instance = cardInstance;
+    card.instance.sandbox.el = card.element;
   },
 
   destroyCards: function() {
@@ -100,16 +117,7 @@ var card = Conductor.card({
     var element = document.querySelector(card.elementId);
 
     instance.waitForLoad().then(function(loadedInstance) {
-      loadedInstance.sandbox.capabilities.cardManager.destroyCard();
-      return { element: element, loadedInstance: loadedInstance };
-    })
-    .then(function(data) {
-      var element = data.element;
-      var loadedInstance = data.loadedInstance;
-
-      loadedInstance.destroy();
-      element.remove();
+      instance.sandbox.capabilities.cardManager.destroyCard();
     });
-
   }
 });

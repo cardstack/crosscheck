@@ -29,6 +29,10 @@ var card = Conductor.card({
         destroyCard: function() {
           if (!this.card.app) { return; }
           this.card.app.destroy();
+          this.send('didDestroyApp', {
+            url: this.card.data.url,
+            id: this.card.data.id
+          });
           delete this.card.app;
         }
       }
