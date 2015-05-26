@@ -1,0 +1,41 @@
+/* Put your CSS here */
+html, body {
+  margin: 20px;
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+.ember-application {
+  display: inline-block;
+  width: 18%;
+  min-height: 200px;
+  float: left;
+  border: 3px solid black;
+  margin-right: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+#sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+}
+
+#sidebar > div {
+  height: 100%;
+}
+
+#sidebar iframe {
+  height: 100%;
+  padding: 20px;
+}
+
+main {
+  height: 100%;
+  width: 75%;
+}
